@@ -51,6 +51,6 @@ def todo_delete(request):
 
 
 @api_view(["PATCH"])
-def todo_complete(request):
+def todo_complete(request, pk):
     todos = ""
     return Response(todos)
