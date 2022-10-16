@@ -1,4 +1,3 @@
-from turtle import position, title
 from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
@@ -52,7 +51,7 @@ class TodoTests(APITestCase):
         """
         Ensure we can clear all todo objects.
         """
-        url = reverse("todo-list")
+        url = reverse("todo-clear")
         response = self.client.delete(url, format="json")
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(Todo.objects.count(), 0)
@@ -65,30 +64,26 @@ class TodoTests(APITestCase):
         data = {"source": 3, "destination": 1}
         response = self.client.patch(url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertContains(
-            response.data,
-            {
-                {"position": 1, "title": "Do laundry"},
-                {"position": 2, "title": "Meet Emma"},
-                {"position": 3, "title": "Go to market"},
-            },
-        )
         self.assertEqual(Todo.objects.get(position=1).title, "Do laundry")
         self.assertEqual(Todo.objects.get(position=2).title, "Meet Emma")
         self.assertEqual(Todo.objects.get(position=3).title, "Go to market")
+        self.assertEqual(
+            response.data,
+            "Todo successfully sorted!",
+        )
 
     def test_delete_todo(self):
         """
         Ensure we can delete a single todo.
         """
-        url = reverse("todo-delete", args=[4])
+        url = reverse("todo-detail", args=[4])
         response = self.client.delete(url, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(Todo.objects.get(id=4), None)
+        self.assertEqual(Todo.objects.count(), 4)
         self.assertEqual(Todo.objects.get(id=5).position, 3)
         self.assertEqual(
             response.data,
-            {"id": 4, "position": 3, "is_completed": False, "title": "Do laundry"},
+            "Todo successfully deleted!",
         )
 
     def test_complete_todo(self):
