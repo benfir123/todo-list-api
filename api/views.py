@@ -34,7 +34,7 @@ class TodoViewSet(ViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def list(self, request):
-        todos = Todo.objects.all()
+        todos = Todo.objects.all().order_by("position")
         serializer = TodoSerializer(todos, many=True)
         return Response(serializer.data)
 
@@ -84,9 +84,12 @@ class TodoViewSet(ViewSet):
     @action(detail=True, methods=["PATCH"], name="todo-complete")
     def complete(self, request, pk=None):
         todo = Todo.objects.get(id=pk)
-        todo.is_completed = True
+        if todo.is_completed == True:
+            todo.is_completed = False
+        else:
+            todo.is_completed = True
         todo.save(update_fields=["is_completed"])
 
         return Response(
-            "Todo successfully completed!", status=status.HTTP_204_NO_CONTENT
+            "Todo successfully (un)completed!", status=status.HTTP_204_NO_CONTENT
         )
