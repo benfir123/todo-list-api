@@ -13,7 +13,7 @@ def api_overview(request):
     api_urls = {
         "Create todo (POST)": "/todos/",
         "Get list of todos (GET)": "/todos/",
-        "Clear todo list (DELETE)": "/todos/",
+        "Clear todo list (DELETE)": "/todos/clear/",
         "Reorder todo list (PATCH)": "/todos/sort/",
         "Delete todo (DELETE)": "/todos/<int:pk>/",
         "Mark as done (PATCH)": "/todos/<int:pk>/complete/",
@@ -91,5 +91,6 @@ class TodoViewSet(ViewSet):
         todo.save(update_fields=["is_completed"])
 
         return Response(
-            "Todo successfully (un)completed!", status=status.HTTP_204_NO_CONTENT
+            "Todo successfully (un)completed!",
+            status=status.HTTP_204_NO_CONTENT,
         )
