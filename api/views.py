@@ -64,13 +64,13 @@ class TodoViewSet(ViewSet):
             source_pk = Todo.objects.get(position=source).id
 
             if source > destination:
-                for x in range(source - destination, destination - 1, -1):
+                for x in range(source - 1, destination - 1, -1):
                     todo = Todo.objects.get(position=x)
                     todo.position += 1
                     todo.save(update_fields=["position"])
 
             if source < destination:
-                for x in range(destination - source, destination + 1):
+                for x in range(source + 1, destination + 1):
                     todo = Todo.objects.get(position=x)
                     todo.position -= 1
                     todo.save(update_fields=["position"])
