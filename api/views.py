@@ -23,15 +23,21 @@ def api_overview(request):
 
 class TodoViewSet(ViewSet):
     def create(self, request):
+        # increment todo positions in database
         for x in range(Todo.objects.count() - 1, -1, -1):
             todo = Todo.objects.get(position=x)
             todo.position += 1
             todo.save(update_fields=["position"])
 
+        # save new todo into database if it passes validation
         serializer = TodoSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        # make list of all todos and send back to client
+        todos = Todo.objects.all().order_by("position")
+        listSerializer = TodoSerializer(todos, many=True)
+        return Response(listSerializer.data, status=status.HTTP_201_CREATED)
 
     def list(self, request):
         todos = Todo.objects.all().order_by("position")
